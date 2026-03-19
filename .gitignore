@@ -14,3 +14,24 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Build folders
+/build/
+/cpp/build/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+
+# Visual Studio
+*.sln
+*.vcxproj
+*.vcxproj.filters
+.vs/
+
+# Binaries
+*.dll
+*.lib
+*.exp
+*.pdb
