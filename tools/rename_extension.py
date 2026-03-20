@@ -22,14 +22,12 @@ import glob
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SEARCH_DIRS = [
-    "cpp",
-    "godot/project",
-]
+SKIP_DIRS = {".git", ".godot", "third_party", "build"}
 
 SEARCH_EXTENSIONS = {".cpp", ".hpp", ".h", ".txt", ".gdextension", ".cmake"}
 
-TOP_LEVEL_CMAKE = "CMakeLists.txt"
+# Directories where only .gdextension files should be processed
+GDEXT_ONLY_DIRS = {"godot"}
 
 
 def validate_name(name: str, label: str) -> None:
@@ -42,17 +40,16 @@ def validate_name(name: str, label: str) -> None:
 def find_files() -> list[str]:
     """Find all files that could contain extension references."""
     files = []
-    for search_dir in SEARCH_DIRS:
-        full_dir = os.path.join(PROJECT_ROOT, search_dir)
-        for root, _, filenames in os.walk(full_dir):
-            for filename in filenames:
-                if os.path.splitext(filename)[1] in SEARCH_EXTENSIONS:
-                    files.append(os.path.join(root, filename))
-
-    top_cmake = os.path.join(PROJECT_ROOT, TOP_LEVEL_CMAKE)
-    if os.path.exists(top_cmake):
-        files.append(top_cmake)
-
+    for root, dirs, filenames in os.walk(PROJECT_ROOT):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        rel_root = os.path.relpath(root, PROJECT_ROOT)
+        in_gdext_only = rel_root.split(os.sep)[0] in GDEXT_ONLY_DIRS
+        for filename in filenames:
+            ext = os.path.splitext(filename)[1]
+            if in_gdext_only and ext != ".gdextension":
+                continue
+            if ext in SEARCH_EXTENSIONS:
+                files.append(os.path.join(root, filename))
     return files
 
 
@@ -108,16 +105,23 @@ def main() -> None:
             updated.append(rel)
             print(f"  Updated {rel}")
 
-    # Rename the .gdextension file and remove stale .uid
-    old_gdext = os.path.join(PROJECT_ROOT, "godot", "project", f"{old_name}.gdextension")
-    new_gdext = os.path.join(PROJECT_ROOT, "godot", "project", f"{new_name}.gdextension")
-    old_uid = old_gdext + ".uid"
-    if os.path.exists(old_gdext):
-        os.rename(old_gdext, new_gdext)
-        print(f"  Renamed {old_name}.gdextension -> {new_name}.gdextension")
-    if os.path.exists(old_uid):
-        os.remove(old_uid)
-        print(f"  Removed {old_name}.gdextension.uid (Godot will regenerate it)")
+    # Find and rename .gdextension files and remove stale .uid files
+    gdext_filename = f"{old_name}.gdextension"
+    for root, _, filenames in os.walk(PROJECT_ROOT):
+        if ".git" in root or "third_party" in root or "build" in root:
+            continue
+        if gdext_filename in filenames:
+            old_gdext = os.path.join(root, gdext_filename)
+            new_gdext = os.path.join(root, f"{new_name}.gdextension")
+            old_uid = old_gdext + ".uid"
+            rel_dir = os.path.relpath(root, PROJECT_ROOT)
+
+            os.rename(old_gdext, new_gdext)
+            print(f"  Renamed {rel_dir}/{old_name}.gdextension -> {new_name}.gdextension")
+
+            if os.path.exists(old_uid):
+                os.remove(old_uid)
+                print(f"  Removed {rel_dir}/{old_name}.gdextension.uid (Godot will regenerate it)")
 
     if not updated and not os.path.exists(new_gdext):
         print(f"  No references to '{old_name}' found. Is the name correct?")
