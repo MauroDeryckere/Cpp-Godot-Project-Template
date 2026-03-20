@@ -1,6 +1,9 @@
 [configuration]
 entry_symbol = "myextension_init"
 compatibility_minimum = "4.2"
+; Allows the editor to reload the extension when the binary changes.
+; Disable this if your initialization has side effects that can't safely run twice.
+reloadable = true
 
 [libraries]
 linux.debug.x86_64 = "res://../bin/libmyextension.so"
