@@ -5,6 +5,10 @@ add_library(myextension SHARED ${SRC})
 target_compile_features(myextension PRIVATE cxx_std_20)
 set_target_properties(myextension PROPERTIES CXX_EXTENSIONS OFF)
 
+if(WIN32)
+    set_target_properties(myextension PROPERTIES PREFIX "")
+endif()
+
 target_include_directories(myextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
