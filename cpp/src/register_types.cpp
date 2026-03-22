@@ -12,7 +12,7 @@ void initialize(ModuleInitializationLevel level)
         return;
     }
 
-    ClassDB::register_class<MyNode>();
+    GDREGISTER_CLASS(MyNode);
 }
 
 void uninitialize(ModuleInitializationLevel level)
