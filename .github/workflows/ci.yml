@@ -48,6 +48,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
+          fetch-depth: 1
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
@@ -62,7 +63,7 @@ jobs:
         run: cmake --preset ${{ matrix.build_type == 'Debug' && 'debug' || 'release' }} -DBUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Build
-        run: cmake --build --preset ${{ matrix.build_type == 'Debug' && 'debug' || 'release' }}
+        run: cmake --build --preset ${{ matrix.build_type == 'Debug' && 'debug' || 'release' }} --parallel
 
       - name: Test
         run: ctest --test-dir build/${{ matrix.build_type == 'Debug' && 'debug' || 'release' }} --output-on-failure
@@ -80,6 +81,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
+          fetch-depth: 1
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
@@ -94,7 +96,7 @@ jobs:
         run: cmake --preset android-${{ matrix.abi }} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Build
-        run: cmake --build --preset android-${{ matrix.abi }}
+        run: cmake --build --preset android-${{ matrix.abi }} --parallel
 
   ios:
     name: iOS (arm64)
@@ -105,6 +107,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
+          fetch-depth: 1
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
@@ -119,4 +122,4 @@ jobs:
         run: cmake --preset ios -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Build
-        run: cmake --build --preset ios
+        run: cmake --build --preset ios --parallel
