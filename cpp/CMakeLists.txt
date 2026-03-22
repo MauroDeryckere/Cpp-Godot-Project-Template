@@ -18,6 +18,10 @@ target_link_libraries(myextension PRIVATE
     godot-cpp
 )
 
+# Suppress warnings from godot-cpp headers
+get_target_property(GODOT_CPP_INCLUDE_DIRS godot-cpp INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(myextension SYSTEM PRIVATE ${GODOT_CPP_INCLUDE_DIRS})
+
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
     set_target_properties(myextension PROPERTIES
         XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
