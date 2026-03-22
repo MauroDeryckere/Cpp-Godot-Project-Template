@@ -4,8 +4,35 @@
 		Example node defined in GDExtension.
 	</brief_description>
 	<description>
-		A sample node that demonstrates a basic GDExtension class. Prints the frame delta each frame via [method Node._process].
+		A sample node that demonstrates exported properties, signals, and method bindings in a GDExtension class. Emits a [signal tick] signal once per second, scaled by [member speed].
 	</description>
 	<tutorials>
 	</tutorials>
+	<methods>
+		<method name="set_speed">
+			<return type="void" />
+			<param index="0" name="speed" type="float" />
+			<description>
+				Sets the tick speed multiplier.
+			</description>
+		</method>
+		<method name="get_speed">
+			<return type="float" />
+			<description>
+				Returns the current tick speed multiplier.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="speed" type="float" setter="set_speed" getter="get_speed" default="1.0">
+			Controls how fast the [signal tick] signal is emitted. A value of 2.0 emits twice per second.
+		</member>
+	</members>
+	<signals>
+		<signal name="tick">
+			<description>
+				Emitted once per second, scaled by [member speed].
+			</description>
+		</signal>
+	</signals>
 </class>
