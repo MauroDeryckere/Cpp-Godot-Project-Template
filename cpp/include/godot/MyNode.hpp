@@ -6,7 +6,7 @@ namespace godot
 {
     class MyNode : public Node
     {
-        GDCLASS(MyNode, Node);
+        GDCLASS(MyNode, Node)
 
     public:
         MyNode() = default;

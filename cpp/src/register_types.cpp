@@ -15,9 +15,8 @@ void initialize(ModuleInitializationLevel level)
     GDREGISTER_CLASS(MyNode);
 }
 
-void uninitialize(ModuleInitializationLevel level)
+void uninitialize(ModuleInitializationLevel /*level*/)
 {
-
 }
 
 extern "C"

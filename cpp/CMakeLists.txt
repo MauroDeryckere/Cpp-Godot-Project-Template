@@ -44,7 +44,30 @@ target_include_directories(${EXTENSION_NAME} SYSTEM PRIVATE ${GODOT_CPP_INCLUDE_
 if(GODOTCPP_TARGET MATCHES "editor|template_debug")
     file(GLOB_RECURSE DOC_XML CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doc_classes/*.xml)
     if(DOC_XML)
-        target_doc_sources(${EXTENSION_NAME} "${DOC_XML}")
+        # Generate at configure time to avoid sccache race conditions with build-time generation
+        set(DOC_SOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/gen/doc_source.cpp")
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/gen")
+
+        set(PYTHON_LIST "")
+        foreach(XML_FILE ${DOC_XML})
+            if(PYTHON_LIST)
+                string(APPEND PYTHON_LIST ",")
+            endif()
+            string(APPEND PYTHON_LIST "'${XML_FILE}'")
+        endforeach()
+
+        execute_process(
+            COMMAND "${Python3_EXECUTABLE}" "-c"
+                "from doc_source_generator import generate_doc_source; generate_doc_source('${DOC_SOURCE_FILE}', [${PYTHON_LIST}])"
+            WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/third_party/godot-cpp"
+            RESULT_VARIABLE DOC_GEN_RESULT
+        )
+
+        if(DOC_GEN_RESULT EQUAL 0 AND EXISTS "${DOC_SOURCE_FILE}")
+            target_sources(${EXTENSION_NAME} PRIVATE "${DOC_SOURCE_FILE}")
+        else()
+            message(WARNING "Failed to generate doc sources, skipping documentation compilation")
+        endif()
     endif()
 endif()
 
