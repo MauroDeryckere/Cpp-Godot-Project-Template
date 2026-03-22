@@ -1,2 +1,10 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# Binary files
+*.dll binary
+*.lib binary
+*.exp binary
+*.pdb binary
+*.so binary
+*.dylib binary

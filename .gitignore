@@ -37,3 +37,12 @@ CMakeFiles/
 *.lib
 *.exp
 *.pdb
+*.so
+*.dylib
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# CMake compile database
+compile_commands.json
