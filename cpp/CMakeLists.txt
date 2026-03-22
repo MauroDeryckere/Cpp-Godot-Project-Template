@@ -3,7 +3,17 @@ file(GLOB_RECURSE SRC CONFIGURE_DEPENDS src/*.cpp)
 add_library(myextension SHARED ${SRC})
 
 target_compile_features(myextension PRIVATE cxx_std_20)
-set_target_properties(myextension PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(myextension PROPERTIES
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+)
+
+target_compile_options(myextension PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
 
 if(WIN32)
     set_target_properties(myextension PROPERTIES PREFIX "")
