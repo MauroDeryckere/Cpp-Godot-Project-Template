@@ -3,6 +3,15 @@ project(GodotCppTemplate)
 
 set(EXTENSION_NAME "myextension" CACHE STRING "Name of the GDExtension library")
 
+# Map CMAKE_BUILD_TYPE to GODOTCPP_TARGET if not explicitly set
+if(NOT GODOTCPP_TARGET)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(GODOTCPP_TARGET "template_release" CACHE STRING "")
+    else()
+        set(GODOTCPP_TARGET "template_debug" CACHE STRING "")
+    endif()
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Use ccache/sccache if available (speeds up local rebuilds)

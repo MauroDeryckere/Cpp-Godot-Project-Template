@@ -9,6 +9,25 @@ target_compile_options(${EXTENSION_NAME} PRIVATE
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
 )
 
+# Optional static analysis (enable with -DUSE_CPPCHECK=ON or -DUSE_IWYU=ON)
+if(USE_CPPCHECK)
+    find_program(CPPCHECK_PROGRAM cppcheck)
+    if(CPPCHECK_PROGRAM)
+        set_target_properties(${EXTENSION_NAME} PROPERTIES
+            CXX_CPPCHECK "${CPPCHECK_PROGRAM};--std=c++20;--quiet;--suppress=missingIncludeSystem"
+        )
+    endif()
+endif()
+
+if(USE_IWYU)
+    find_program(IWYU_PROGRAM include-what-you-use)
+    if(IWYU_PROGRAM)
+        set_target_properties(${EXTENSION_NAME} PROPERTIES
+            CXX_INCLUDE_WHAT_YOU_USE "${IWYU_PROGRAM}"
+        )
+    endif()
+endif()
+
 target_include_directories(${EXTENSION_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
@@ -21,10 +40,12 @@ target_link_libraries(${EXTENSION_NAME} PRIVATE
 get_target_property(GODOT_CPP_INCLUDE_DIRS godot-cpp INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(${EXTENSION_NAME} SYSTEM PRIVATE ${GODOT_CPP_INCLUDE_DIRS})
 
-# Compile class documentation into the extension (shows in Godot's built-in help)
-file(GLOB_RECURSE DOC_XML CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doc_classes/*.xml)
-if(DOC_XML)
-    target_doc_sources(${EXTENSION_NAME} "${DOC_XML}")
+# Compile class documentation into debug builds (shows in Godot's built-in help)
+if(GODOTCPP_TARGET MATCHES "editor|template_debug")
+    file(GLOB_RECURSE DOC_XML CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doc_classes/*.xml)
+    if(DOC_XML)
+        target_doc_sources(${EXTENSION_NAME} "${DOC_XML}")
+    endif()
 endif()
 
 # Generate .gdextension file from template
