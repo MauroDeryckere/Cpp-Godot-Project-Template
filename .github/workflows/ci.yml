@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: build/${{ matrix.build_type == 'Debug' && 'debug' || 'release' }}
-          key: godot-cpp-${{ matrix.os }}-${{ matrix.build_type }}-${{ hashFiles('third_party/godot-cpp/**') }}
+          key: godot-cpp-${{ matrix.os }}-${{ matrix.build_type }}-${{ hashFiles('third_party/godot-cpp/**', 'CMakeLists.txt', 'cpp/CMakeLists.txt') }}
 
       - name: Configure
         run: cmake --preset ${{ matrix.build_type == 'Debug' && 'debug' || 'release' }} -DBUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
@@ -101,7 +101,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: build/android-${{ matrix.abi }}
-          key: godot-cpp-android-${{ matrix.abi }}-${{ hashFiles('third_party/godot-cpp/**') }}
+          key: godot-cpp-android-${{ matrix.abi }}-${{ hashFiles('third_party/godot-cpp/**', 'CMakeLists.txt', 'cpp/CMakeLists.txt') }}
 
       - name: Configure
         run: cmake --preset android-${{ matrix.abi }} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
@@ -127,7 +127,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: build/ios
-          key: godot-cpp-ios-${{ hashFiles('third_party/godot-cpp/**') }}
+          key: godot-cpp-ios-${{ hashFiles('third_party/godot-cpp/**', 'CMakeLists.txt', 'cpp/CMakeLists.txt') }}
 
       - name: Configure
         run: cmake --preset ios -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache

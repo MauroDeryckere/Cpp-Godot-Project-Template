@@ -3,13 +3,11 @@ project(GodotCppTemplate)
 
 set(EXTENSION_NAME "myextension" CACHE STRING "Name of the GDExtension library")
 
-# Map CMAKE_BUILD_TYPE to GODOTCPP_TARGET if not explicitly set
-if(NOT GODOTCPP_TARGET)
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(GODOTCPP_TARGET "template_release" CACHE STRING "")
-    else()
-        set(GODOTCPP_TARGET "template_debug" CACHE STRING "")
-    endif()
+# Map CMAKE_BUILD_TYPE to GODOTCPP_TARGET
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(GODOTCPP_TARGET "template_release" CACHE STRING "" FORCE)
+else()
+    set(GODOTCPP_TARGET "template_debug" CACHE STRING "" FORCE)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
