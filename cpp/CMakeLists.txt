@@ -109,3 +109,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
     )
 endif()
+
+# Copy MinGW runtime DLLs next to the extension so Godot can find them
+if(MINGW)
+    foreach(DLL_NAME libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll)
+        find_file(${DLL_NAME}_PATH ${DLL_NAME} PATHS ${CMAKE_CXX_COMPILER}/../ NO_DEFAULT_PATH)
+        if(${DLL_NAME}_PATH)
+            add_custom_command(TARGET ${EXTENSION_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${${DLL_NAME}_PATH}" "${BIN_OUTPUT_DIR}"
+            )
+        endif()
+    endforeach()
+endif()
